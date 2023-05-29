@@ -15,7 +15,7 @@
                 ['rgba(0, 157, 0, 0.5) 0 5px 5px, rgb(4, 187, 14) 0 -2px 0 3px inset, rgba(255, 255, 255, 0.25) 0 8px inset']
             }"
             @mousedown="handleClick({})"
-        />
+        ><span :class="clicked ? 'play-on' : 'play'">&#10004;</span></button>
     </div>
 </template>
 
@@ -141,6 +141,9 @@
 }
 
 .button {
+    display: flex;
+    align-items: center;
+    justify-content: center;
     cursor: pointer;
     position: relative;
     border: none;
@@ -151,6 +154,22 @@
     float: left;
     width: 140px;
     -webkit-transition: all .2s linear;
+    transition: all .2s linear;
+}
+
+.play {
+    color: rgba(0, 0, 0, 0.29);
+    font-size: 85px;
+    margin: -8px 0 0 0;
+    -webkit-transition: all .2s linear;
+    transition: all .2s linear;
+}
+
+.play-on {
+    color: #0fad18;
+    font-size: 85px;
+    margin: -12px 0 -3px 3px;
+    transform: scale(0.95);
     transition: all .2s linear;
 }
 
