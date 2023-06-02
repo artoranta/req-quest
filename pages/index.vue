@@ -53,26 +53,30 @@
                 if (this.clicked) {
                     return
                 }
-                this.clicked = true
                 if (this.$router.currentRoute.value.hash) {
+                    this.clicked = true
                     this.sendRequest(this.$router.currentRoute.value.hash.replace(/^#/, ''))
                 }
+            },
+            reset(delay = 2000) {
                 setTimeout(() => {
                     this.clicked = false
                     this.result = false
                     this.error = false
-                }, 2000)
+                }, delay)
             },
             sendRequest (url) {
                 const xhr = new XMLHttpRequest()
                 xhr.open('GET', `https://${url}`)
                 xhr.responseType = 'json'
                 xhr.onload = ({ target }) => {
+                    this.reset()
                     if (target.status) {
                         this.result = true
                     }
                 }
                 xhr.onerror = (target) => {
+                    this.reset()
                     this.error = true
                     console.log(target)
                 }
