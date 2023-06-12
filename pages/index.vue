@@ -1,21 +1,15 @@
 <template>
     <div class="container">
         <div class="box">
-            <div class="result" :class="result ? '' : 'result-off'">&#128512;</div>
-            <div class="result" :class="error ? '' : 'error-off'">&#128577;</div>
-            <div class="text" :class="clicked ? 'text-off' : ''">{{ text }}</div>
+            <div class="result" :class="result ? '' : 'result-off'" v-html="good"/>
+            <div class="result" :class="error ? '' : 'error-off'" v-html="bad"/>
+            <div :style="textStyle">{{ text }}</div>
         </div>
         <button
             class="button"
-            :class="clicked ? 'off' : 'on'"
-            :style="{
-                backgroundColor: '#0EC518',
-                'box-shadow': clicked ?
-                [`0px 2px 0px 2px rgb(${this.lightenDarkenColor('#0EC518', -30)}) inset`] :
-                ['rgba(0, 157, 0, 0.5) 0 5px 5px, rgb(4, 187, 14) 0 -2px 0 3px inset, rgba(255, 255, 255, 0.25) 0 8px inset']
-            }"
+            :style="buttonStyle"
             @mousedown="handleClick({})"
-        ><span :class="clicked ? 'play-on' : 'play'">&#10004;</span></button>
+        ><span :style="buttonTextStyle" v-html="icon" /></button>
     </div>
 </template>
 
@@ -24,20 +18,93 @@
         name: "index.vue",
         data () {
             return {
-                text: 'Click me!',
                 clicked: false,
                 result: false,
-                error: false
+                error: false,
+                bad: '&#10060;', // '&#128577;',
+                good: '&#9989;', //'&#128512;'
             }
         },
+        computed: {
+            color() {
+                try {
+                    const value = this.$router.currentRoute.value.query.color
+                    return `#${value || '0EC518'}`
+                } catch (err) {
+                    // Green
+                    return '#0EC518'
+                }
+            },
+            icon () {
+                try {
+                    let value = this.$router.currentRoute.value.query.icon
+                    switch(value) {
+                        case 'up':
+                            value = '8679'
+                            break;
+                        case 'down':
+                            value = '8681'
+                            break;
+                        default:
+                    }
+                    return `&#${value || '10004'};`
+                } catch (err) {
+                    // 9650 Up
+                    // 9660 Down
+                    // Checkbox
+                    return '&#10004;'
+                }
+            },
+            text () {
+                try {
+                    return decodeURI(this.$router.currentRoute.value.query.text || 'Click me!')
+                } catch (err) {
+                    return 'Click me!'
+                }
+            },
+            textStyle () {
+                return {
+                    color: '#e8e8e8',
+                    height: '40px',
+                    fontSize: '40px',
+                    transition: 'all .5s linear',
+                    transform: this.clicked ? 'rotate(0.5turn) scale(0.1)' : '',
+                    opacity: this.clicked ? '0' : '1',
+                }
+            },
+            buttonTextStyle () {
+                return {
+                    color: this.clicked ? this.darkerColor() : 'rgba(0, 0, 0, 0.29)',
+                    fontSize: '85px',
+                    transform: this.clicked ? 'scale(0.95)' : 'scale(1)',
+                    transition: 'all .2s linear',
+                }
+            },
+            buttonStyle () {
+                return {
+                    filter: this.clicked ? 'brightness(75%)' : 'brightness(100%)',
+                    backgroundColor: this.color,
+                    boxShadow: this.clicked ? this.boxShadowClicked() : this.boxShadow(),
+                    transition: 'all .2s linear'
+                }
+            },
+        },
         methods: {
+            darkerColor() {
+                return this.lightenDarkenColor(this.color, -30)
+            },
+            boxShadow () {
+                return `rgb(${this.lightenDarkenColor(this.color, -30)}) 0 5px 5px, ${this.color} 0 -2px 0 3px inset, rgba(255, 255, 255, 0.25) 0 8px inset`
+            },
+            boxShadowClicked () {
+                return [`0px 2px 0px 2px rgb(${this.lightenDarkenColor(this.color, -30)}) inset`]
+            },
             hexToRgb (hex) {
                 const shorthandRegex = /^#?([a-f\d])([a-f\d])([a-f\d])$/i
                 hex = hex.replace(shorthandRegex, function (m, r, g, b) {
                     return r + r + g + g + b + b
                 })
-
-                const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex)
+                const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex) || ['00', 'a7', '00']
                 return result
                     ? Object.values({
                         r: parseInt(result[1], 16),
@@ -97,24 +164,8 @@
     min-height: 100vh;
 }
 
-.on {
-    filter: brightness(100%);
-}
-
-.off {
-    filter: brightness(75%);
-}
-
 .box {
     position: relative;
-}
-
-.text {
-    height: 40px;
-    font-size: 40px;
-    color: #e8e8e8;
-    transition: all .5s linear;
-    opacity: 1;
 }
 
 .result {
@@ -124,14 +175,8 @@
     left: 50%;
     transform: translate(-50%, -50%);
     height: 40px;
-    color: #0EC518;
     transition: all .5s linear;
     opacity: 1;
-}
-
-.text-off {
-    transform: rotate(0.5turn) scale(0.1);
-    opacity: 0;
 }
 
 .result-off {
@@ -154,27 +199,16 @@
     border-radius: 50%;
     height: 140px;
     margin: 5px;
-    box-shadow: rgba(0, 157, 0, 0.5) 0 5px 5px, rgb(4, 187, 14) 0 -2px 0 3px inset, rgba(255, 255, 255, 0.25) 0 8px inset;
     float: left;
     width: 140px;
-    -webkit-transition: all .2s linear;
-    transition: all .2s linear;
 }
 
-.play {
-    color: rgba(0, 0, 0, 0.29);
-    font-size: 85px;
-    margin: -8px 0 0 0;
-    -webkit-transition: all .2s linear;
-    transition: all .2s linear;
-}
-
-.play-on {
-    color: #0fad18;
-    font-size: 85px;
-    margin: -12px 0 -3px 3px;
-    transform: scale(0.95);
-    transition: all .2s linear;
+input,
+textarea,
+button,
+select,
+a {
+    -webkit-tap-highlight-color: transparent;
 }
 
 </style>
