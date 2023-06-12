@@ -1,15 +1,15 @@
 <template>
     <div class="container">
         <div class="box">
-            <div class="result" :class="result ? '' : 'result-off'" v-html="good"/>
-            <div class="result" :class="error ? '' : 'error-off'" v-html="bad"/>
+            <div :style="resultStyle" class="result" :class="result ? '' : 'result-off'" v-html="good"/>
+            <div :style="resultStyle" class="result" :class="error ? '' : 'error-off'" v-html="bad"/>
             <div :style="textStyle">{{ text }}</div>
         </div>
         <button
             class="button"
             :style="buttonStyle"
             @mousedown="handleClick({})"
-        ><span :style="buttonTextStyle" v-html="icon" /></button>
+        ><span :style="buttonTextStyle">{{ decodeHTML(icon) }}</span></button>
     </div>
 </template>
 
@@ -21,8 +21,8 @@
                 clicked: false,
                 result: false,
                 error: false,
-                bad: '&#10060;', // '&#128577;',
-                good: '&#9989;', //'&#128512;'
+                bad: '&#10006;',
+                good: '&#10004;',
             }
         },
         computed: {
@@ -40,17 +40,15 @@
                     let value = this.$router.currentRoute.value.query.icon
                     switch(value) {
                         case 'up':
-                            value = '8679'
+                            value = '11165'
                             break;
                         case 'down':
-                            value = '8681'
+                            value = '11167'
                             break;
                         default:
                     }
                     return `&#${value || '10004'};`
                 } catch (err) {
-                    // 9650 Up
-                    // 9660 Down
                     // Checkbox
                     return '&#10004;'
                 }
@@ -72,6 +70,11 @@
                     opacity: this.clicked ? '0' : '1',
                 }
             },
+            resultStyle () {
+                return {
+                    color: this.error ? 'red' : 'green',
+                }
+            },
             buttonTextStyle () {
                 return {
                     color: this.clicked ? this.darkerColor() : 'rgba(0, 0, 0, 0.29)',
@@ -82,6 +85,7 @@
             },
             buttonStyle () {
                 return {
+                    padding: '2em',
                     filter: this.clicked ? 'brightness(75%)' : 'brightness(100%)',
                     backgroundColor: this.color,
                     boxShadow: this.clicked ? this.boxShadowClicked() : this.boxShadow(),
@@ -90,6 +94,11 @@
             },
         },
         methods: {
+            decodeHTML(html) {
+                const txt = document.createElement("textarea");
+                txt.innerHTML = html;
+                return txt.value;
+            },
             darkerColor() {
                 return this.lightenDarkenColor(this.color, -30)
             },
@@ -169,12 +178,12 @@
 }
 
 .result {
-    font-size: 55px;
+    font-size: 65px;
     position: absolute;
     top: 0;
     left: 50%;
     transform: translate(-50%, -50%);
-    height: 40px;
+    height: 50px;
     transition: all .5s linear;
     opacity: 1;
 }
