@@ -38,7 +38,7 @@
             mode() {
                 try {
                     const value = this.$router.currentRoute.value.query.mode
-                    let mode = ['white', '#393939']
+                    let mode = ['white', '#555555']
                     switch(value) {
                         case 'night':
                             mode = ['#2b2b2b', '#e8e8e8']
@@ -56,10 +56,10 @@
                     let value = this.$router.currentRoute.value.query.icon
                     switch(value) {
                         case 'up':
-                            value = '11165'
+                            value = '9650'
                             break;
                         case 'down':
-                            value = '11167'
+                            value = '9660'
                             break;
                         default:
                     }
@@ -98,15 +98,15 @@
             },
             buttonTextStyle () {
                 return {
-                    color: this.clicked ? this.darkerColor() : 'rgba(0, 0, 0, 0.29)',
+                    color: this.clicked ? this.darkerColor() : `rgb(${this.lightenDarkenColor(this.color, -70)}`,
                     fontSize: '85px',
+                    margin: this.margin(this.icon),
                     transform: this.clicked ? 'scale(0.95)' : 'scale(1)',
                     transition: 'all .2s linear',
                 }
             },
             buttonStyle () {
                 return {
-                    padding: '2em',
                     filter: this.clicked ? 'brightness(75%)' : 'brightness(100%)',
                     backgroundColor: this.color,
                     boxShadow: this.clicked ? this.boxShadowClicked() : this.boxShadow(),
@@ -115,6 +115,14 @@
             },
         },
         methods: {
+            margin (value) {
+                switch(value) {
+                    case '&#9660;':
+                        return '12px 0 0 0'
+                    default:
+                }
+                return '0'
+            },
             decodeHTML(html) {
                 const txt = document.createElement("textarea");
                 txt.innerHTML = html;
