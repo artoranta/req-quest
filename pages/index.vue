@@ -1,5 +1,5 @@
 <template>
-    <div class="container">
+    <div class="container" :style="containerStyle">
         <div class="box">
             <div :style="resultStyle" class="result" :class="result ? '' : 'result-off'" v-html="good"/>
             <div :style="resultStyle" class="result" :class="error ? '' : 'error-off'" v-html="bad"/>
@@ -35,6 +35,22 @@
                     return '#0EC518'
                 }
             },
+            mode() {
+                try {
+                    const value = this.$router.currentRoute.value.query.mode
+                    let mode = ['white', '#393939']
+                    switch(value) {
+                        case 'night':
+                            mode = ['#2b2b2b', '#e8e8e8']
+                            break;
+                        default:
+                    }
+                    return mode
+                } catch (err) {
+                    // Green
+                    return '#0EC518'
+                }
+            },
             icon () {
                 try {
                     let value = this.$router.currentRoute.value.query.icon
@@ -62,7 +78,6 @@
             },
             textStyle () {
                 return {
-                    color: '#e8e8e8',
                     height: '40px',
                     fontSize: '40px',
                     transition: 'all .5s linear',
@@ -72,7 +87,13 @@
             },
             resultStyle () {
                 return {
-                    color: this.error ? 'red' : 'green',
+                    color: this.error ? '#DC143C' : '#0EC518',
+                }
+            },
+            containerStyle () {
+                return {
+                    background: this.mode[0] || '#2b2b2b',
+                    color: this.mode[1] || '#e8e8e8',
                 }
             },
             buttonTextStyle () {
@@ -169,7 +190,6 @@
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    background: #2b2b2b;
     min-height: 100vh;
 }
 
