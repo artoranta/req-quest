@@ -176,8 +176,12 @@
                 xhr.responseType = 'json'
                 xhr.onload = ({ target }) => {
                     this.reset()
-                    if (target.status) {
+
+                    if (target.status < 399) {
                         this.result = true
+                    } else {
+                        this.error = true
+                        console.log(target)
                     }
                 }
                 xhr.onerror = (target) => {
